@@ -1,12 +1,12 @@
-template<typename T, bool isTrapped>
+template<typename T, bool IsTrapped>
 class Treasure {
     // todo: check if T is integer type
     T value;
 
 public:
-    bool IsTrapped;
+    bool isTrapped;
 
-    constexpr Treasure(T val) : value(val), IsTrapped(isTrapped) {}
+    constexpr Treasure(T val) : value(val), isTrapped(IsTrapped) {}
 
     constexpr T evaluate() { return value; }
 
