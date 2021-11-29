@@ -30,7 +30,7 @@ Klasa powinna udostępniać:
 * `getLoot()` – metoda zwracająca aktualną wartość skarbu i opróżniająca
   go (wartość skarbu staje się zerowa),
 
-* `IsTrapped` – pole będące wartością logiczną, mówiące, czy skarb zawiera
+* `isTrapped` – statyczne pole będące wartością logiczną, mówiące, czy skarb zawiera
   pułapkę.
 
 Ponadto powinno być możliwe użycie skrótów:
@@ -67,7 +67,7 @@ Klasa `Adventurer` powinna udostępniać:
 * `getStrength()` – metoda zwracająca siłę poszukiwacza przygód, tylko
   dla **uzbrojonego poszukiwacza przygód**;
 
-* `isArmed` – pole będące wartością logiczną, mówiące, czy poszukiwacz przygód
+* `isArmed` – statyczne pole będące wartością logiczną, mówiące, czy poszukiwacz przygód
   jest uzbrojony;
 
 * `loot(&&treasure)` – powoduje przejęcie danego skarbu przez poszukiwacza
@@ -123,10 +123,10 @@ Każdy uczestnik rozpoczyna ekspedycję bez żadnych skarbów.
 Każda ekspedycja składa się z szeregu zdarzeń. Dopuszczamy ich dwa rodzaje:
 
 1. **Uczestnik znajduje skarb.** Wtedy uczestnik pozyskuje zawartość skarbu
-  za pomocą swojej metody `loot()`.
+   za pomocą swojej metody `loot()`.
 
 2. **Spotkanie dwóch uczestników.** Rezultat spotkania zależy od tego, czy są
-  uzbrojeni.
+   uzbrojeni.
 
     * Jeśli żaden z nich nie jest uzbrojony, to rozchodzą się w swoje strony
       i nic się nie dzieje.
