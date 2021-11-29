@@ -1,14 +1,22 @@
+#ifndef TREASURE_H
+#define TREASURE_H
+
+#include <concepts>
+
+template<typename T>
+concept TreasureValueType = std::integral<T>;
+
 template<typename T, bool IsTrapped>
+requires TreasureValueType<T>
 class Treasure {
-    // todo: check if T is integer type
     T value;
 
 public:
-    bool isTrapped;
+    static constexpr bool isTrapped = IsTrapped;
 
-    constexpr Treasure(T val) : value(val), isTrapped(IsTrapped) {}
+    constexpr explicit Treasure(T val) : value(val) {}
 
-    constexpr T evaluate() { return value; }
+    constexpr T evaluate() const { return value; }
 
     constexpr T getLoot() {
         T buff = value;
@@ -22,3 +30,5 @@ using SafeTreasure = Treasure<T, false>;
 
 template<typename T>
 using TrappedTreasure = Treasure<T, true>;
+
+#endif // TREASURE_H
