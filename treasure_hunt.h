@@ -57,7 +57,7 @@ template<typename A, typename B>
 requires ValidMember<A> && ValidMember<B>
 constexpr void run(Encounter<A, B> encounter) {
     bool aIsArmed = encounter.a.isArmed;
-    bool bIsArmed = encounter.a.isArmed;
+    bool bIsArmed = encounter.b.isArmed;
     if (aIsArmed && bIsArmed) {
         auto cmp = encounter.a.getStrength() <=> encounter.b.getStrength();
         if (cmp < 0) {
