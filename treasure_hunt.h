@@ -5,10 +5,10 @@
 #include "member.h"
 
 template<typename T>
-concept ValidTreasure = requires() {}
+concept ValidTreasure = requires {}
 
 template<typename T>
-concept ValidMember = requires() {}
+concept ValidMember = requires {}
 
 template<typename T>
 concept EncounterSide = ValidMember<T> || ValidTreasure<T>;
