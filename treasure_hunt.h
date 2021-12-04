@@ -6,11 +6,8 @@
 
 template<typename T>
 concept ValidTreasure = requires (T t) {
-    // te 2 linijki są niepotrzebne skoro to ma być *dokładnie ten sam* typ co Treasure
-    //    t.isTrapped;
-    //    t.evaluate();
     std::same_as<T, Treasure<decltype(t.evaluate()), true>>
-    || std::same_as<T, Treasure<decltype(t.evaluate()), false>>;
+        || std::same_as<T, Treasure<decltype(t.evaluate()), false>>;
 };
 
 template<typename M, typename T>
@@ -28,7 +25,7 @@ template<typename T>
 concept ValidMember = requires (T m) {
     typename T::strength_t;
     {m.pay()} -> TreasureValueType;
-    m.isArmed; // to chyba nie sprawdza czy pole jest statyczne
+    m.isArmed;
     WithStaticField<T>;
     std::convertible_to<decltype(m.isArmed), bool>;
     HasLootMethod<T, SafeTreasure<decltype(m.pay())>>;
@@ -38,16 +35,13 @@ concept ValidMember = requires (T m) {
 template<typename T>
 concept EncounterSide = ValidMember<T> || ValidTreasure<T>;
 
-
 template<EncounterSide sideA, EncounterSide sideB>
 class Encounter {
 public:
-    constexpr Encounter(sideA &a, sideB &b) : a(a), b(b) {}
-
-
-    //private: // to musi być publiczne żeby się dało do tego odwoływać w run
     sideA &a;
     sideB &b;
+
+    constexpr Encounter(sideA &a, sideB &b) : a(a), b(b) {}
 };
 
 template<typename A, typename B>
@@ -55,7 +49,7 @@ constexpr void run(Encounter<A, B> encounter) = delete;
 
 template<typename A, typename B>
 requires ValidMember<A> && ValidMember<B>
-constexpr void run(Encounter<A, B> encounter) {
+constexpr void run(Encounter<A, B> encounter) { // member + member
     constexpr bool aIsArmed = encounter.a.isArmed;
     constexpr bool bIsArmed = encounter.b.isArmed;
     if constexpr (aIsArmed && bIsArmed) {
@@ -74,7 +68,7 @@ constexpr void run(Encounter<A, B> encounter) {
 
 template<typename A, typename B>
 requires ValidTreasure<A> && ValidMember<B>
-constexpr void run(Encounter<A, B> encounter) { //treasure + member
+constexpr void run(Encounter<A, B> encounter) { // treasure + member
     encounter.b.loot(std::move(encounter.a));
 }
 
