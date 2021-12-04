@@ -8,10 +8,13 @@
 
 template<typename T, bool IsArmed>
 requires TreasureValueType<T>
-class Adventurer {}; // Klasa jest implementowana poprzez specjalizacje.
+
+class Adventurer {
+}; // Klasa jest implementowana poprzez specjalizacje.
 
 template<typename T>
 requires TreasureValueType<T>
+
 class Adventurer<T, false> { // nieuzbrojony
 public:
     using strength_t = uint32_t;
@@ -21,7 +24,7 @@ public:
     constexpr Adventurer() : value(0), strength(0) {}
 
     // todo (Mateusz): sprawdzić czy tutaj nie powinno być T2 // raczej nie ~Michał
-    constexpr void loot(SafeTreasure<T>&& treasure) {
+    constexpr void loot(SafeTreasure<T> &treasure) {
         value += treasure.getLoot();
     }
 
@@ -33,11 +36,11 @@ public:
 
 private:
     T value;
-    const strength_t strength;
 };
 
 template<typename T>
 requires TreasureValueType<T>
+
 class Adventurer<T, true> { // uzbrojony
 public:
     using strength_t = uint32_t;
@@ -47,14 +50,18 @@ public:
     constexpr explicit Adventurer(strength_t s_val) : value(0), strength(s_val) {}
 
     template<bool isTrapped>
-    constexpr void loot(Treasure<T, isTrapped>&& treasure) {
+    constexpr void loot(Treasure<T, isTrapped> &treasure) {
         if (isTrapped) {
-            strength /= 2;
+            if (strength != 0) {
+                strength /= 2;
+                value += treasure.getLoot();
+            }
+        } else {
+            value += treasure.getLoot();
         }
-        value += treasure.getLoot();
     }
 
-    constexpr strength_t getStrength() const {return strength;}
+    constexpr strength_t getStrength() const { return strength; }
 
     constexpr T pay() {
         T buff = value;
@@ -72,7 +79,9 @@ using Explorer = Adventurer<T, false>;
 
 
 template<typename T, std::size_t CompletedExpeditions>
-requires TreasureValueType<T> && (CompletedExpeditions < 25)
+requires TreasureValueType<T>
+&& (CompletedExpeditions < 25)
+
 class Veteran {
 public:
     using strength_t = uint32_t;
@@ -80,14 +89,20 @@ public:
     static constexpr const bool isArmed = true;
 
     constexpr Veteran() : value(0), completedExpeditions(CompletedExpeditions),
-        strength(calcStrength()) {}
+                          strength(calcStrength()) {}
 
     template<bool isTrapped>
-    constexpr void loot(Treasure<T, isTrapped>&& treasure) {
-        value += treasure.getLoot();
+    constexpr void loot(Treasure<T, isTrapped> &&treasure) {
+        if (isTrapped) {
+            if (strength != 0) {
+                value += treasure.getLoot();
+            }
+        } else {
+            value += treasure.getLoot();
+        }
     }
 
-    constexpr strength_t getStrength() const {return strength;}
+    constexpr strength_t getStrength() const { return strength; }
 
     constexpr T pay() {
         T buff = value;
@@ -101,7 +116,7 @@ private:
     const strength_t strength;
 
     constexpr strength_t calcStrength() const {
-        if (CompletedExpeditions == 0) {
+        if (completedExpeditions == 0) {
             return 0;
         }
         strength_t a = 0, b = 1;
