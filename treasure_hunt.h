@@ -8,10 +8,10 @@
 template<typename T>
 concept ValidTreasure = requires (T t) {
     // te 2 linijki są niepotrzebne skoro to ma być *dokładnie ten sam* typ co Treasure
-//    t.isTrapped;
-//    t.evaluate();
+    //    t.isTrapped;
+    //    t.evaluate();
     std::same_as<T, Treasure<decltype(t.evaluate()), true>>
-        || std::same_as<T, Treasure<decltype(t.evaluate()), false>>;
+    || std::same_as<T, Treasure<decltype(t.evaluate()), false>>;
 };
 
 template<typename M, typename T>
@@ -39,7 +39,7 @@ public:
     constexpr Encounter(sideA &a, sideB &b) : a(a), b(b) {}
 
 
-//private: // to musi być publiczne żeby się dało do tego odwoływać w run
+    //private: // to musi być publiczne żeby się dało do tego odwoływać w run
     sideA &a;
     sideB &b;
 };

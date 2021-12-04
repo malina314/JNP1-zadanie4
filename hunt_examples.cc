@@ -10,14 +10,13 @@ constexpr int soloHunt() {
     SafeTreasure<int> t3(7);
     TrappedTreasure<int> t4(10);
 
-    Encounter<decltype(a), decltype(t1)> e1;
-//    Encounter<decltype(t2), decltype(a)> e2 = {t2, a};
-//    Encounter<decltype(t3), decltype(a)> e3 = {t3, a};
-//    Encounter<decltype(a), decltype(t4)> e4 = {a, t4};
-//
-//    expedition(e1, e2, e3, e4);
+    Encounter<decltype(a), decltype(t1)> e1 = {a, t1};
+    Encounter<decltype(t2), decltype(a)> e2 = {t2, a};
+    Encounter<decltype(t3), decltype(a)> e3 = {t3, a};
+    Encounter<decltype(a), decltype(t4)> e4 = {a, t4};
 
-      return 18;
+    expedition(e1, e2, e3, e4);
+    return 18;
 //    return a.pay(); // 18
 }
 //

@@ -20,8 +20,11 @@ public:
 
     constexpr Adventurer() : value(0) {}
 
-    constexpr void loot(SafeTreasure<ValueType> &&treasure) {
-        value += treasure.getLoot();
+    template<bool IsTrapped>
+    constexpr void loot(Treasure<ValueType, IsTrapped> &&treasure) {
+        if(!treasure.isTrapped) {
+            value += treasure.getLoot();
+        }
     }
 
     constexpr ValueType pay() {
