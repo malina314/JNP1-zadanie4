@@ -12,15 +12,15 @@ class Adventurer {}; // Klasa jest implementowana poprzez specjalizacje.
 
 template<typename T>
 requires TreasureValueType<T>
-class Adventurer<T, false> {
+class Adventurer<T, false> { // nieuzbrojony
 public:
     using strength_t = uint32_t;
 
-    static constexpr bool isArmed = false;
+    static constexpr const bool isArmed = false;
 
     constexpr Adventurer() : value(0), strength(0) {}
 
-    // todo (Mateusz): sprawdzić czy tutaj nie powinno być T2
+    // todo (Mateusz): sprawdzić czy tutaj nie powinno być T2 // raczej nie ~Michał
     constexpr void loot(SafeTreasure<T>&& treasure) {
         value += treasure.getLoot();
     }
@@ -38,13 +38,13 @@ private:
 
 template<typename T>
 requires TreasureValueType<T>
-class Adventurer<T, true> {
+class Adventurer<T, true> { // uzbrojony
 public:
     using strength_t = uint32_t;
 
-    static constexpr bool isArmed = true;
+    static constexpr const bool isArmed = true;
 
-    constexpr explicit Adventurer(strength_t stren) : value(0), strength(stren) {}
+    constexpr explicit Adventurer(strength_t s_val) : value(0), strength(s_val) {}
 
     template<bool isTrapped>
     constexpr void loot(Treasure<T, isTrapped>&& treasure) {
@@ -70,13 +70,14 @@ private:
 template<typename T>
 using Explorer = Adventurer<T, false>;
 
+
 template<typename T, std::size_t CompletedExpeditions>
 requires TreasureValueType<T> && (CompletedExpeditions < 25)
 class Veteran {
 public:
     using strength_t = uint32_t;
 
-    static constexpr bool isArmed = true;
+    static constexpr const bool isArmed = true;
 
     constexpr Veteran() : value(0), completedExpeditions(CompletedExpeditions),
         strength(calcStrength()) {}

@@ -12,7 +12,7 @@ class Treasure {
     T value;
 
 public:
-    static constexpr bool isTrapped = IsTrapped;
+    static constexpr const bool isTrapped = IsTrapped;
 
     constexpr explicit Treasure(T val) : value(val) {}
 
