@@ -56,18 +56,18 @@ constexpr void run(Encounter<A, B> encounter) = delete;
 template<typename A, typename B>
 requires ValidMember<A> && ValidMember<B>
 constexpr void run(Encounter<A, B> encounter) {
-    bool aIsArmed = encounter.a.isArmed;
-    bool bIsArmed = encounter.b.isArmed;
-    if (aIsArmed && bIsArmed) {
+    constexpr bool aIsArmed = encounter.a.isArmed;
+    constexpr bool bIsArmed = encounter.b.isArmed;
+    if constexpr (aIsArmed && bIsArmed) {
         auto cmp = encounter.a.getStrength() <=> encounter.b.getStrength();
         if (cmp < 0) {
             encounter.b.loot(SafeTreasure<decltype(encounter.a.pay())>(encounter.a.pay()));
         } else if (cmp > 0) {
             encounter.a.loot(SafeTreasure<decltype(encounter.b.pay())>(encounter.b.pay()));
         }
-    } else if (aIsArmed && !bIsArmed) {
+    } else if constexpr (aIsArmed) {
         encounter.a.loot(SafeTreasure<decltype(encounter.b.pay())>(encounter.b.pay()));
-    } else if (!aIsArmed && bIsArmed) {
+    } else if constexpr (bIsArmed) {
         encounter.b.loot(SafeTreasure<decltype(encounter.a.pay())>(encounter.a.pay()));
     }
 }
