@@ -26,10 +26,10 @@ template<typename T>
 concept EncounterSide = ValidMember<T> || ValidTreasure<T>;
 
 template<typename sideA, typename sideB>
-requires EncounterSide<sideA> && EncounterSide<sideB>
+requires (EncounterSide<sideA> && EncounterSide<sideB>)
 class Encounter {
 public: // nie wiem czy tak sie da rozroznic przypadki run()?
-    Encounter(sideA& x, sideB& y) : a(x), b(y) {}
+    //Encounter(sideA& x, sideB& y) : a(x), b(y) {}
 
     template<typename A, typename B>
     requires ValidMember<A> && ValidMember<B>
