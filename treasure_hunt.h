@@ -38,15 +38,9 @@ private:
     sideB& b;
 };
 
-// todo (wspólnie): poprawić to
-//  ale chyba najpierw trzeba zrobi wcześniejsze rzeczy //~nie trzeba, wystarczy używać run(..) (Michał)
-//  na pewno musi być variadic template
-template<typename sideA, typename sideB>
-void expedition(Encounter<sideA, sideB>... E) {
-    // lepiej użyć folda
-    for (auto e : E) {
-        run(r);
-    }
+template<typename... Encounters>
+void expedition(Encounters... encounters) {
+    (run(encounters), ...);
 }
 
 #endif // TREASURE_HUNT_H
