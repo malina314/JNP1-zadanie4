@@ -20,7 +20,7 @@ concept EncounterSide = ValidMember<T> || ValidTreasure<T>;
 template<typename sideA, typename sideB>
 requires EncounterSide<sideA> && EncounterSide<sideB>
 class Encounter {
-public:
+public: // nie wiem czy tak sie da rozroznic przypadki run()?
     template<typename A, typename B>
     requires ValidMember<A> && ValidMember<B>
     constexpr void static run(Encounter<A, B> encounter) {
