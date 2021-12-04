@@ -3,7 +3,6 @@
 
 #include "treasure.h"
 #include "member.h"
-#include <concepts>
 
 template<typename T>
 concept ValidTreasure = requires (T t) {

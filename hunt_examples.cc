@@ -16,40 +16,39 @@ constexpr int soloHunt() {
     Encounter<decltype(a), decltype(t4)> e4 = {a, t4};
 
     expedition(e1, e2, e3, e4);
-    return 18;
-//    return a.pay(); // 18
+    return a.pay(); // 18
 }
-//
-//constexpr int holyGrail() {
-//    TrappedTreasure<int> grail(10000);
-//    Veteran<int, 6> arthur;
-//    Adventurer<int, true> morgana(15);
-//
-//    Encounter<decltype(arthur), decltype(grail)> e1 = {arthur, grail};
-//    Encounter<decltype(morgana), decltype(grail)> e2 = {morgana, grail};
-//    Encounter<decltype(arthur), decltype(morgana)> e3 = {arthur, morgana};
-//
-//    expedition(e2, e1, e1, e3, e3);
-//
-//    return arthur.pay(); // 10000
-//}
-//
-//constexpr int tiringTraps() {
-//    Adventurer<int, true> a(2);
-//    TrappedTreasure<int> t1(1);
-//    TrappedTreasure<int> t2(1);
-//    TrappedTreasure<int> t3(1);
-//    TrappedTreasure<int> t4(1);
-//
-//    Encounter<decltype(a), decltype(t1)> e1 = {a, t1};
-//    Encounter<decltype(a), decltype(t1)> e2 = {a, t2};
-//    Encounter<decltype(a), decltype(t1)> e3 = {a, t3};
-//    Encounter<decltype(a), decltype(t1)> e4 = {a, t4};
-//
-//    expedition(e1, e2, e3, e4);
-//
-//    return a.pay(); // 2
-//}
+
+constexpr int holyGrail() {
+    TrappedTreasure<int> grail(10000);
+    Veteran<int, 6> arthur;
+    Adventurer<int, true> morgana(15);
+
+    Encounter<decltype(arthur), decltype(grail)> e1 = {arthur, grail};
+    Encounter<decltype(morgana), decltype(grail)> e2 = {morgana, grail};
+    Encounter<decltype(arthur), decltype(morgana)> e3 = {arthur, morgana};
+
+    expedition(e2, e1, e1, e3, e3);
+
+    return arthur.pay(); // 10000
+}
+
+constexpr int tiringTraps() {
+    Adventurer<int, true> a(2);
+    TrappedTreasure<int> t1(1);
+    TrappedTreasure<int> t2(1);
+    TrappedTreasure<int> t3(1);
+    TrappedTreasure<int> t4(1);
+
+    Encounter<decltype(a), decltype(t1)> e1 = {a, t1};
+    Encounter<decltype(a), decltype(t1)> e2 = {a, t2};
+    Encounter<decltype(a), decltype(t1)> e3 = {a, t3};
+    Encounter<decltype(a), decltype(t1)> e4 = {a, t4};
+
+    expedition(e1, e2, e3, e4);
+
+    return a.pay(); // 2
+}
 
 } // anonimowa przestrzeń nazw
 
@@ -65,6 +64,6 @@ int main() {
     // constexpr Veteran<int, 27> lyingVet{123};
 
     static_assert(soloHunt() == 18);
-//    static_assert(holyGrail() == 10000);
-//    static_assert(tiringTraps() == 2);
+    static_assert(holyGrail() == 10000);
+    static_assert(tiringTraps() == 2);
 }
