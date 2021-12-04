@@ -3,72 +3,81 @@
 
 #include "treasure.h"
 #include "member.h"
+#include <concepts>
 
 template<typename T>
 concept ValidTreasure = requires (T t) {
-    t.isTrapped;
-    t.evaluate();
-    same_as<T, Treasure<decltype(t.evaluate()), t.isTrapped>>;
+    // te 2 linijki są niepotrzebne skoro to ma być *dokładnie ten sam* typ co Treasure
+//    t.isTrapped;
+//    t.evaluate();
+    std::same_as<T, Treasure<decltype(t.evaluate()), true>>
+        || std::same_as<T, Treasure<decltype(t.evaluate()), false>>;
+};
+
+template<typename M, typename T>
+concept HasLootMethod = requires(T &&t, M m) {
+    {m.loot(std::forward(t))};
 };
 
 template<typename T>
 concept ValidMember = requires (T m) {
-    //sprawdzenie czy udostepnia strength_t
-    m.pay();
-    m.isArmed;
-    convertible_to<decltype(m.isArmed), bool>;
-    loot(SafeTreasure<decltype(m.pay())>);
-    loot(TrappedTreasure<decltype(m.pay())>);
-    same_as<T, Adventurer<decltype(m.pay()), m.isArmed>> || same_as<T, Veteran<decltype(m.pay()), 0>>; //weteran do poprawy
-    };
+    typename T::strength_t;
+    {m.pay()} -> TreasureValueType;
+    m.isArmed; // to chyba nie sprawdza czy pole jest statyczne
+    std::convertible_to<decltype(m.isArmed), bool>;
+    HasLootMethod<T, SafeTreasure<decltype(m.pay())>>;
+    HasLootMethod<T, TrappedTreasure<decltype(m.pay())>>;
+};
 
 template<typename T>
 concept EncounterSide = ValidMember<T> || ValidTreasure<T>;
 
-template<typename sideA, typename sideB>
-requires EncounterSide<sideA> && EncounterSide<sideB>
+template<EncounterSide sideA, EncounterSide sideB>
 class Encounter {
-public: // nie wiem czy tak sie da rozroznic przypadki run()?
-    Encounter(sideA& x, sideB& y) : a(x), b(y) {}
+public:
+    constexpr Encounter(sideA &a, sideB &b) : a(a), b(b) {}
 
-    template<typename A, typename B>
-    requires ValidMember<A> && ValidMember<B>
-    constexpr void static run(Encounter<A, B> encounter) {
-        bool aIsArmed = encounter.a.isArmed;
-        bool bIsArmed = encounter.a.isArmed;
-        if (aIsArmed && bIsArmed) {
-            auto cmp = encounter.a.getStrength() <=> encounter.b.getStrength();
-            if (cmp < 0) {
-                encounter.b.loot(SafeTreasure<decltype(encounter.a.pay())>(encounter.a.pay()));
-            } else if (cmp > 0) {
-                encounter.a.loot(SafeTreasure<decltype(encounter.b.pay())>(encounter.b.pay()));
-            }
-        } else if (aIsArmed && !bIsArmed) {
-            encounter.a.loot(SafeTreasure<decltype(encounter.b.pay())>(encounter.b.pay()));
-        } else if (!aIsArmed && bIsArmed) {
-            encounter.b.loot(SafeTreasure<decltype(encounter.a.pay())>(encounter.a.pay()));
-        }
-    }
-
-    template<typename A, typename B>
-    requires ValidTreasure<A> && ValidMember<B>
-    constexpr void static run(Encounter<A, B> encounter) { //treasure + member
-        encounter.a.loot(encounter.b);
-    }
-
-    template<typename A, typename B>
-    requires ValidMember<A> && ValidTreasure<B>
-    constexpr void static run(Encounter<A, B> encounter) { // member + treasure
-        encounter.b.loot(encounter.a);
-    }
-
-private:
-    sideA& a;
-    sideB& b;
+//private: // to musi być publiczne żeby się dało do tego odwoływać w run
+    sideA &a;
+    sideB &b;
 };
 
+template<typename A, typename B>
+constexpr void run(Encounter<A, B> encounter) = delete;
+
+template<typename A, typename B>
+requires ValidMember<A> && ValidMember<B>
+constexpr void run(Encounter<A, B> encounter) {
+    bool aIsArmed = encounter.a.isArmed;
+    bool bIsArmed = encounter.a.isArmed;
+    if (aIsArmed && bIsArmed) {
+        auto cmp = encounter.a.getStrength() <=> encounter.b.getStrength();
+        if (cmp < 0) {
+            encounter.b.loot(SafeTreasure<decltype(encounter.a.pay())>(encounter.a.pay()));
+        } else if (cmp > 0) {
+            encounter.a.loot(SafeTreasure<decltype(encounter.b.pay())>(encounter.b.pay()));
+        }
+    } else if (aIsArmed && !bIsArmed) {
+        encounter.a.loot(SafeTreasure<decltype(encounter.b.pay())>(encounter.b.pay()));
+    } else if (!aIsArmed && bIsArmed) {
+        encounter.b.loot(SafeTreasure<decltype(encounter.a.pay())>(encounter.a.pay()));
+    }
+}
+
+template<typename A, typename B>
+requires ValidTreasure<A> && ValidMember<B>
+constexpr void run(Encounter<A, B> encounter) { //treasure + member
+    encounter.b.loot(std::move(encounter.a));
+}
+
+template<typename A, typename B>
+requires ValidMember<A> && ValidTreasure<B>
+constexpr void run(Encounter<A, B> encounter) { // member + treasure
+    encounter.a.loot(std::move(encounter.b));
+}
+
 template<typename... Encounters>
-void expedition(Encounters... encounters) {
+constexpr void expedition(Encounters... encounters) {
     (run(encounters), ...);
 }
 
