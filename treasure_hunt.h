@@ -18,11 +18,18 @@ concept HasLootMethod = requires(T &&t, M m) {
     {m.loot(std::forward(t))};
 };
 
+// Z moodle.mimuw.edu.pl/mod/forum/discuss.php?d=6524 (autor: Piotr Wojtczak):
+template<typename T>
+concept WithStaticField = requires () { // Formatowanie oryginalne.
+    { [] () constexpr { return T::isArmed; }() };// Zmieniona jedynie nazwa pola.
+};
+
 template<typename T>
 concept ValidMember = requires (T m) {
     typename T::strength_t;
     {m.pay()} -> TreasureValueType;
     m.isArmed; // to chyba nie sprawdza czy pole jest statyczne
+    WithStaticField<T>;
     std::convertible_to<decltype(m.isArmed), bool>;
     HasLootMethod<T, SafeTreasure<decltype(m.pay())>>;
     HasLootMethod<T, TrappedTreasure<decltype(m.pay())>>;
