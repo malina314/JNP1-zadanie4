@@ -6,20 +6,20 @@
 template<typename T>
 concept TreasureValueType = std::integral<T>;
 
-template<typename T, bool IsTrapped>
-requires TreasureValueType<T>
+template<typename ValueType, bool IsTrapped>
+requires TreasureValueType<ValueType>
 class Treasure {
-    T value;
+    ValueType value;
 
 public:
     static constexpr const bool isTrapped = IsTrapped;
 
-    constexpr explicit Treasure(T val) : value(val) {}
+    constexpr explicit Treasure(ValueType val) : value(val) {}
 
-    constexpr T evaluate() const { return value; }
+    constexpr ValueType evaluate() const {return value;}
 
-    constexpr T getLoot() {
-        T buff = value;
+    constexpr ValueType getLoot() {
+        ValueType buff = value;
         value = 0;
         return buff;
     }

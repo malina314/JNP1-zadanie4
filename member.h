@@ -6,42 +6,37 @@
 #include <cstddef>
 #include <cstdint>
 
-template<typename T, bool IsArmed>
-requires TreasureValueType<T>
+template<typename ValueType, bool IsArmed>
+requires TreasureValueType<ValueType>
+class Adventurer {}; // Klasa jest implementowana poprzez specjalizacje.
 
-class Adventurer {
-}; // Klasa jest implementowana poprzez specjalizacje.
-
-template<typename T>
-requires TreasureValueType<T>
-
-class Adventurer<T, false> { // nieuzbrojony
+template<typename ValueType>
+requires TreasureValueType<ValueType>
+class Adventurer<ValueType, false> { // Nieuzbrojony poszukiwacz przygód.
 public:
     using strength_t = uint32_t;
 
     static constexpr const bool isArmed = false;
 
-    constexpr Adventurer() : value(0), strength(0) {}
+    constexpr Adventurer() : value(0) {}
 
-    // todo (Mateusz): sprawdzić czy tutaj nie powinno być T2 // raczej nie ~Michał
-    constexpr void loot(SafeTreasure<T> &treasure) {
+    constexpr void loot(SafeTreasure<ValueType> &&treasure) {
         value += treasure.getLoot();
     }
 
-    constexpr T pay() {
-        T buff = value;
+    constexpr ValueType pay() {
+        ValueType buff = value;
         value = 0;
         return buff;
     }
 
 private:
-    T value;
+    ValueType value;
 };
 
-template<typename T>
-requires TreasureValueType<T>
-
-class Adventurer<T, true> { // uzbrojony
+template<typename ValueType>
+requires TreasureValueType<ValueType>
+class Adventurer<ValueType, true> { // Uzbrojony poszukiwacz przygód.
 public:
     using strength_t = uint32_t;
 
@@ -50,7 +45,7 @@ public:
     constexpr explicit Adventurer(strength_t s_val) : value(0), strength(s_val) {}
 
     template<bool isTrapped>
-    constexpr void loot(Treasure<T, isTrapped> &treasure) {
+    constexpr void loot(Treasure<ValueType, isTrapped> &&treasure) {
         if (isTrapped) {
             if (strength != 0) {
                 strength /= 2;
@@ -61,27 +56,24 @@ public:
         }
     }
 
-    constexpr strength_t getStrength() const { return strength; }
+    constexpr strength_t getStrength() const {return strength;}
 
-    constexpr T pay() {
-        T buff = value;
+    constexpr ValueType pay() {
+        ValueType buff = value;
         value = 0;
         return buff;
     }
 
 private:
-    T value;
+    ValueType value;
     strength_t strength;
 };
 
-template<typename T>
-using Explorer = Adventurer<T, false>;
+template<typename ValueType>
+using Explorer = Adventurer<ValueType, false>;
 
-
-template<typename T, std::size_t CompletedExpeditions>
-requires TreasureValueType<T>
-&& (CompletedExpeditions < 25)
-
+template<typename ValueType, std::size_t CompletedExpeditions>
+requires TreasureValueType<ValueType> && (CompletedExpeditions < 25)
 class Veteran {
 public:
     using strength_t = uint32_t;
@@ -92,7 +84,7 @@ public:
                           strength(calcStrength()) {}
 
     template<bool isTrapped>
-    constexpr void loot(Treasure<T, isTrapped> &&treasure) {
+    constexpr void loot(Treasure<ValueType, isTrapped> &&treasure) {
         if (isTrapped) {
             if (strength != 0) {
                 value += treasure.getLoot();
@@ -102,16 +94,16 @@ public:
         }
     }
 
-    constexpr strength_t getStrength() const { return strength; }
+    constexpr strength_t getStrength() const {return strength;}
 
-    constexpr T pay() {
-        T buff = value;
+    constexpr ValueType pay() {
+        ValueType buff = value;
         value = 0;
         return buff;
     }
 
 private:
-    T value;
+    ValueType value;
     const std::size_t completedExpeditions;
     const strength_t strength;
 
@@ -120,7 +112,7 @@ private:
             return 0;
         }
         strength_t a = 0, b = 1;
-        for (std::size_t i = 2; i <= CompletedExpeditions; i++) {
+        for (std::size_t i = 2; i <= completedExpeditions; i++) {
             a += b;
             std::swap(a, b);
         }
