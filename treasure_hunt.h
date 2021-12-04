@@ -5,14 +5,22 @@
 #include "member.h"
 
 template<typename T>
-concept ValidTreasure = requires {
-    //todo
-}
+concept ValidTreasure = requires (T t) {
+    t.isTrapped;
+    t.evaluate();
+    same_as<T, Treasure<decltype(t.evaluate()), t.isTrapped>>;
+};
 
 template<typename T>
-concept ValidMember = requires {
-    // todo
-    }
+concept ValidMember = requires (T m) {
+    //sprawdzenie czy udostepnia strength_t
+    m.pay();
+    m.isArmed;
+    convertible_to<decltype(m.isArmed), bool>;
+    loot(SafeTreasure<decltype(m.pay())>);
+    loot(TrappedTreasure<decltype(m.pay())>);
+    same_as<T, Adventurer<decltype(m.pay()), m.isArmed>> || same_as<T, Veteran<decltype(m.pay()), 0>>; //weteran do poprawy
+    };
 
 template<typename T>
 concept EncounterSide = ValidMember<T> || ValidTreasure<T>;
@@ -21,6 +29,8 @@ template<typename sideA, typename sideB>
 requires EncounterSide<sideA> && EncounterSide<sideB>
 class Encounter {
 public: // nie wiem czy tak sie da rozroznic przypadki run()?
+    Encounter(sideA& x, sideB& y) : a(x), b(y) {}
+
     template<typename A, typename B>
     requires ValidMember<A> && ValidMember<B>
     constexpr void static run(Encounter<A, B> encounter) {
