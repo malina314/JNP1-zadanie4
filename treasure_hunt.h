@@ -32,10 +32,12 @@ concept ValidMember = requires (T m) {
 template<typename T>
 concept EncounterSide = ValidMember<T> || ValidTreasure<T>;
 
+
 template<EncounterSide sideA, EncounterSide sideB>
 class Encounter {
 public:
     constexpr Encounter(sideA &a, sideB &b) : a(a), b(b) {}
+
 
 //private: // to musi być publiczne żeby się dało do tego odwoływać w run
     sideA &a;
