@@ -6,12 +6,10 @@
 #include <cstddef>
 #include <cstdint>
 
-template<typename ValueType, bool IsArmed>
-requires TreasureValueType<ValueType>
+template<TreasureValueType ValueType, bool IsArmed>
 class Adventurer {}; // Klasa jest implementowana poprzez specjalizacje.
 
-template<typename ValueType>
-requires TreasureValueType<ValueType>
+template<TreasureValueType ValueType>
 class Adventurer<ValueType, false> { // Nieuzbrojony poszukiwacz przygód.
 public:
     using strength_t = uint32_t;
@@ -37,8 +35,7 @@ private:
     ValueType value;
 };
 
-template<typename ValueType>
-requires TreasureValueType<ValueType>
+template<TreasureValueType ValueType>
 class Adventurer<ValueType, true> { // Uzbrojony poszukiwacz przygód.
 public:
     using strength_t = uint32_t;
@@ -72,11 +69,11 @@ private:
     strength_t strength;
 };
 
-template<typename ValueType>
+template<TreasureValueType ValueType>
 using Explorer = Adventurer<ValueType, false>;
 
-template<typename ValueType, std::size_t CompletedExpeditions>
-requires TreasureValueType<ValueType> && (CompletedExpeditions < 25)
+template<TreasureValueType ValueType, std::size_t CompletedExpeditions>
+requires (CompletedExpeditions < 25)
 class Veteran {
 public:
     using strength_t = uint32_t;

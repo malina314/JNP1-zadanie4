@@ -15,18 +15,12 @@ concept HasLootMethod = requires(T &&t, M m) {
     {m.loot(std::forward(t))};
 };
 
-// Z moodle.mimuw.edu.pl/mod/forum/discuss.php?d=6524 (autor: Piotr Wojtczak):
 template<typename T>
-concept WithStaticField = requires () { // Formatowanie oryginalne.
-    { [] () constexpr { return T::isArmed; }() };// Zmieniona jedynie nazwa pola.
-};
-
-template<typename T>
-concept ValidMember = requires (T m) {
+concept ValidMember = requires(T m) {
     typename T::strength_t;
     {m.pay()} -> TreasureValueType;
     m.isArmed;
-    WithStaticField<T>;
+    {[]() constexpr {return T::isArmed;}()};
     std::convertible_to<decltype(m.isArmed), bool>;
     HasLootMethod<T, SafeTreasure<decltype(m.pay())>>;
     HasLootMethod<T, TrappedTreasure<decltype(m.pay())>>;
@@ -47,8 +41,7 @@ public:
 template<typename A, typename B>
 constexpr void run(Encounter<A, B> encounter) = delete;
 
-template<typename A, typename B>
-requires ValidMember<A> && ValidMember<B>
+template<ValidMember A, ValidMember B>
 constexpr void run(Encounter<A, B> encounter) { // member + member
     constexpr bool aIsArmed = encounter.a.isArmed;
     constexpr bool bIsArmed = encounter.b.isArmed;
@@ -66,14 +59,12 @@ constexpr void run(Encounter<A, B> encounter) { // member + member
     }
 }
 
-template<typename A, typename B>
-requires ValidTreasure<A> && ValidMember<B>
+template<ValidTreasure A, ValidMember B>
 constexpr void run(Encounter<A, B> encounter) { // treasure + member
     encounter.b.loot(std::move(encounter.a));
 }
 
-template<typename A, typename B>
-requires ValidMember<A> && ValidTreasure<B>
+template<ValidMember A, ValidTreasure B>
 constexpr void run(Encounter<A, B> encounter) { // member + treasure
     encounter.a.loot(std::move(encounter.b));
 }
